@@ -6,7 +6,7 @@ import random
 # 🔑 ضع التوكن والـ Chat ID
 # ==============================
 
-TOKEN = "8621477107:AAGw6TiBLiGq8--o_NfB7K2yjxR5hFheZGk"
+os.getenv("8621477107:AAGw6TiBLiGq8--o_NfB7K2yjxR5hFheZGk")
 CHAT_ID = "1003709871403"
 
 # ==============================
