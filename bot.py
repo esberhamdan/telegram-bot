@@ -72,4 +72,6 @@ while True:
     send_signal()
     time.sleep(300)
 # ==============================
-
+@bot.message_handler(commands=['start'])
+def start(message):
+    bot.send_message(message.chat.id, "البوت يعمل بنجاح ✅")
