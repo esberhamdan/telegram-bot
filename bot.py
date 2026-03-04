@@ -71,27 +71,5 @@ Stop Loss: {round(sl, 4)}
 while True:
     send_signal()
     time.sleep(300)
-Pair: {pair}
-Type: {signal_type}
-Entry: {price}
-Take Profit: {tp}
-Stop Loss: {sl}
-
-#Crypto #Signal
-"""
-
-    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
-    data = {
-        "chat_id": CHAT_ID,
-        "text": message
-    }
-
-    requests.post(url, data=data)
-
-# ==============================
-# 🔁 تشغيل البوت كل 5 دقائق
 # ==============================
 
-while True:
-    send_signal()
-    time.sleep(300)  # كل 5 دقائق
