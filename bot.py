@@ -6,7 +6,7 @@ from datetime import datetime
 # ==============================
 # ضع بياناتك هنا
 # ==============================
-TOKEN = "8621477107:AAGPbCgxuqDzmjgw3CQx-TmWJ89H0DPqJUE"
+BOT_TOKEN = "8621477107:AAGPbCgxuqDzmjgw3CQx-TmWJ89H0DPqJUE"
 CHAT_ID = "-1003709871403"
 # ==============================
 
