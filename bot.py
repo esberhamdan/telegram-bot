@@ -1,74 +1,65 @@
 import requests
-import time
 import random
+import time
+from datetime import datetime
 
 # ==============================
-# 🔑 ضع التوكن والـ Chat ID
+# ضع بياناتك هنا
 # ==============================
-
-TOKEN = os.getenv("8621477107:AAGw6TiBLiGq8--o_NfB7K2yjxR5hFheZGk")
+BOT_TOKEN = "8621477107:AAGPbCgxuqDzmjgw3CQx-TmWJ89H0DPqJUE"
 CHAT_ID = "1003709871403"
-
-# ==============================
-# 📊 قائمة العملات
 # ==============================
 
-symbols = [
-    "BTCUSDT","ETHUSDT","BNBUSDT","SOLUSDT","XRPUSDT",
-    "ADAUSDT","DOGEUSDT","AVAXUSDT","MATICUSDT","DOTUSDT",
-    "LINKUSDT","LTCUSDT","TRXUSDT","UNIUSDT","ATOMUSDT",
-    "APTUSDT","OPUSDT","ARBUSDT","NEARUSDT","FILUSDT"
+# قائمة 25 عملة
+coins = [
+    "BTCUSDT", "ETHUSDT", "BNBUSDT", "XRPUSDT", "ADAUSDT",
+    "SOLUSDT", "DOGEUSDT", "MATICUSDT", "DOTUSDT", "LTCUSDT",
+    "TRXUSDT", "AVAXUSDT", "SHIBUSDT", "ATOMUSDT", "LINKUSDT",
+    "UNIUSDT", "ETCUSDT", "XLMUSDT", "ICPUSDT", "APTUSDT",
+    "NEARUSDT", "FILUSDT", "ALGOUSDT", "HBARUSDT", "EGLDUSDT"
 ]
 
-# ==============================
-# 📈 جلب السعر الحقيقي من Binance
-# ==============================
-
-def get_price(symbol):
-    url = f"https://api.binance.com/api/v3/ticker/price?symbol={symbol}"
-    response = requests.get(url)
-    data = response.json()
-    return float(data["price"])
-
-# ==============================
-# 🚀 إرسال الإشارة
-# ==============================
-
-def send_signal():
-    pair = random.choice(symbols)
-    signal_type = random.choice(["BUY", "SELL"])
-
-    price = get_price(pair)
-
-    # نحسب TP و SL بنسبة 1%
-    tp = price * 1.01
-    sl = price * 0.99
-
-    message = f"""
-🚀 Trading Signal
-
-Pair: {pair}
-Type: {signal_type}
-Entry: {round(price, 4)}
-Take Profit: {round(tp, 4)}
-Stop Loss: {round(sl, 4)}
-
-#Crypto #Signal
-"""
-
-    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
-    data = {
+def send_message(text):
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+    payload = {
         "chat_id": CHAT_ID,
-        "text": message
+        "text": text
     }
+    try:
+        requests.post(url, data=payload)
+        print("Signal sent successfully")
+    except Exception as e:
+        print("Error sending message:", e)
 
-    requests.post(url, data=data)
+def generate_signal():
+    message = "📊 Crypto Signals (5M)\n"
+    message += f"🕒 Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
 
-# ==============================
-# 🔁 تشغيل كل 5 دقائق
-# ==============================
+    selected_coins = random.sample(coins, 25)
+
+    for coin in selected_coins:
+        signal_type = random.choice(["BUY 🟢", "SELL 🔴"])
+        price = round(random.uniform(0.1, 50000), 4)
+        tp = round(price * random.uniform(1.01, 1.05), 4)
+        sl = round(price * random.uniform(0.95, 0.99), 4)
+
+        message += f"{coin}\n"
+        message += f"Signal: {signal_type}\n"
+        message += f"Entry: {price}\n"
+        message += f"TP: {tp}\n"
+        message += f"SL: {sl}\n"
+        message += "---------------------\n"
+
+    return message
+
+print("Bot started...")
 
 while True:
-    send_signal()
-    time.sleep(300)
-# ==============================
+    try:
+        signal_message = generate_signal()
+        send_message(signal_message)
+        print("Waiting 5 minutes...")
+        time.sleep(300)  # 5 دقائق
+    except Exception as e:
+        print("Main loop error:", e)
+        time.sleep(10)
