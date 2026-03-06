@@ -5,10 +5,23 @@ import threading
 from datetime import datetime
 
 # ==============================
-# ضع بياناتك هنا
+# بيانات البوت
 # ==============================
+
 BOT_TOKEN = "8621477107:AAGPbCgxuqDzmjgw3CQx-TmWJ89H0DPqJUE"
 CHAT_ID = "-1003709871403"
+
+API_KEY = "Ds7CjNIyaa5S1uWBqnT1VceR1D8O47YNbVpVpiH3CqJtoNVFumCnWYw3H42eXwsH"
+SECRET_KEY = "629qixBt4fOtE2pw6Y4J8yFX0KphzpwYdV4QkWUOJ0NLZHVIRjMeZNCvI2o75Zax"
+# ==============================
+# عنوان الدفع
+# ==============================
+
+WALLET_ADDRESS = "0xB0313B2C13F1461Dc7aDfE6839196e495fc3D96c"
+
+# رابط القناة
+CHANNEL_LINK = "https://t.me/+9ztPgIHL-GIyNjU0"
+
 # ==============================
 
 coins = [
@@ -20,6 +33,7 @@ coins = [
 ]
 
 last_update_id = None
+waiting_txid = {}
 
 # ==============================
 # سعر Binance الحقيقي
@@ -54,7 +68,7 @@ def send_message(chat_id,text,keyboard=None):
 
 
 # ==============================
-# أزرار البوت
+# قائمة الأزرار
 # ==============================
 
 def main_menu():
@@ -96,6 +110,7 @@ def handle_updates():
             chat_id=update["message"]["chat"]["id"]
             text=update["message"].get("text","")
 
+            # start
             if text=="/start":
 
                 welcome="""
@@ -110,6 +125,7 @@ def handle_updates():
                 send_message(chat_id,welcome,main_menu())
 
 
+            # شروط
             elif text=="شروط دخول المنصة":
 
                 msg="""
@@ -122,44 +138,66 @@ def handle_updates():
                 send_message(chat_id,msg)
 
 
+            # ارسال الدفع
             elif text=="ارسال قيمة الاشتراك":
 
-                msg="""
+                msg=f"""
 يرجى ارسال 15$
 
 إلى محفظة BEP20 التالية:
 
-0xB0313B2C13F1461Dc7aDfE6839196e495fc3D96c
+{WALLET_ADDRESS}
+
+بعد الدفع اضغط
+(أكمل التحقق)
 """
 
                 send_message(chat_id,msg)
 
 
+            # التحقق
             elif text=="أكمل التحقق":
 
-                msg="يتم التحقق من الإيداع يرجى الانتظار قليلاً..."
+                msg="""
+يرجى إرسال TXID الخاص بالمعاملة الآن.
+
+البوت سيقوم بالتحقق منها.
+"""
+
+                waiting_txid[chat_id] = True
 
                 send_message(chat_id,msg)
 
-                time.sleep(5)
 
-                msg2="""
-تم التحقق بنجاح ✅
+            # استقبال txid
+            elif chat_id in waiting_txid:
 
+                txid = text
+
+                send_message(chat_id,"جاري التحقق من المعاملة...")
+
+                # هنا يجب ربط API بلوكشين
+                time.sleep(4)
+
+                send_message(chat_id,"تم التحقق بنجاح ✅")
+
+                msg=f"""
 أهلاً بك في مجتمع المتداولين المحترفين.
 
 انضم إلى القناة الخاصة:
 
-https://t.me/+9ztPgIHL-GIyNjU0
+{CHANNEL_LINK}
 """
 
-                send_message(chat_id,msg2)
+                send_message(chat_id,msg)
+
+                del waiting_txid[chat_id]
 
         time.sleep(2)
 
 
 # ==============================
-# توليد إشارات العملات
+# توليد الإشارات
 # ==============================
 
 def generate_signal():
@@ -192,7 +230,7 @@ def generate_signal():
 
 
 # ==============================
-# ارسال الإشارات كل 5 دقائق
+# ارسال الإشارات
 # ==============================
 
 def signal_loop():
