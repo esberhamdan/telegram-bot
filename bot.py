@@ -19,6 +19,18 @@ coins = [
     "NEARUSDT", "FILUSDT", "ALGOUSDT", "HBARUSDT", "EGLDUSDT"
 ]
 
+# ==============================
+# جلب السعر الحقيقي من Binance
+# ==============================
+def get_price(symbol):
+    url = f"https://api.binance.com/api/v3/ticker/price?symbol={symbol}"
+    try:
+        response = requests.get(url)
+        data = response.json()
+        return float(data["price"])
+    except:
+        return None
+
 def send_message(text):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     payload = {
@@ -38,8 +50,15 @@ def generate_signal():
     selected_coins = random.sample(coins, 25)
 
     for coin in selected_coins:
+
         signal_type = random.choice(["BUY 🟢", "SELL 🔴"])
-        price = round(random.uniform(0.1, 50000), 4)
+
+        # السعر الحقيقي من Binance
+        price = get_price(coin)
+
+        if price is None:
+            continue
+
         tp = round(price * random.uniform(1.01, 1.05), 4)
         sl = round(price * random.uniform(0.95, 0.99), 4)
 
@@ -59,7 +78,7 @@ while True:
         signal_message = generate_signal()
         send_message(signal_message)
         print("Waiting 5 minutes...")
-        time.sleep(300)  # 5 دقائق
+        time.sleep(300)
     except Exception as e:
         print("Main loop error:", e)
         time.sleep(10)
