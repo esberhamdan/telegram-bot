@@ -146,7 +146,7 @@ def handle_updates():
 
 إلى محفظة BEP20 التالية:
 
-{WALLET_ADDRESS}
+{0xcf90267a5dd6e515be810cf012e87b70979ffa8e}
 
 بعد الدفع اضغط
 (أكمل التحقق)
